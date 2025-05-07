@@ -1,12 +1,11 @@
 const mongoose = require("mongoose");
 // MongoDB connection
-const dbURL = "mongodb+srv://MongoEsk:E22M11@cluster0.xpomx.mongodb.net/";
-
+require("dotenv").config();
 let userModel;
 let caseModel;
 
 mongoose
-  .connect(dbURL)
+  .connect(process.env.dbURL)
   .then(() => {
     console.log("DB is connected Successfuly");
     //User Schema
