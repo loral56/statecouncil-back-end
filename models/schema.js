@@ -60,7 +60,8 @@ mongoose
         doc.case_ID = counter.seq.toString().padStart(6, "0");
       }
       if (this.isModified("plaintiff_Name") && this.plaintiff_Name) {
-        const encrypted = await encrypt(this.plaintiff_Name);
+        const encrypted = await encrypt(String(this.plaintiff_Name));
+        console.log("PLAIN VALUE:", this.plaintiff_Name);
         this.plaintiff_Name = JSON.stringify(encrypted); // Save as string
       }
 
@@ -70,32 +71,32 @@ mongoose
       }
 
       if (this.isModified("Email") && this.Email) {
-        const encrypted = await encrypt(this.Email);
+        const encrypted = await encrypt(String(this.Email));
         this.Email = JSON.stringify(encrypted);
       }
 
       if (this.isModified("concerned_Authority") && this.concerned_Authority) {
-        const encrypted = await encrypt(this.concerned_Authority);
+        const encrypted = await encrypt(String(this.concerned_Authority));
         this.concerned_Authority = JSON.stringify(encrypted);
       }
 
-      // if (this.isModified("documents") && this.documents !== null) {
-      //   const encrypted = await encrypt(this.documents);
-      //   this.documents = JSON.stringify(encrypted);
-      // }
+      if (this.isModified("documents") && this.documents !== null) {
+        const encrypted = await encrypt(String(this.documents));
+        this.documents = JSON.stringify(encrypted);
+      }
 
       if (this.isModified("court_name") && this.court_name) {
-        const encrypted = await encrypt(this.court_name);
+        const encrypted = await encrypt(String(this.court_name));
         this.court_name = JSON.stringify(encrypted);
       }
 
       if (this.isModified("Incident_Location") && this.Incident_Location) {
-        const encrypted = await encrypt(this.Incident_Location);
+        const encrypted = await encrypt(String(this.Incident_Location));
         this.Incident_Location = JSON.stringify(encrypted);
       }
 
       if (this.isModified("case_description") && this.case_description) {
-        const encrypted = await encrypt(this.case_description);
+        const encrypted = await encrypt(String(this.case_description));
         this.case_description = JSON.stringify(encrypted);
       }
 

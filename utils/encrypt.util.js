@@ -4,6 +4,10 @@ require("dotenv").config();
 const algorithm = "aes-256-cbc";
 const secretKey = Buffer.from(process.env.ENCRYPTION_SECRET_KEY, "hex");
 const encrypt = (text) => {
+  console.log("Encrypting text:", text);
+  if (!text || typeof text !== "string") {
+    throw new Error("Invalid input for encryption");
+  }
   const iv = crypto.randomBytes(16);
   const cipher = crypto.createCipheriv(algorithm, secretKey, iv);
   const encrypted = Buffer.concat([

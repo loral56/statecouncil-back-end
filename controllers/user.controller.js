@@ -114,8 +114,8 @@ const case_filling = async (req, res) => {
 const decryptCase = async (req, res) => {
   const caseModel = getCaseModel();
   try {
-    const { caseId } = req.params.id;
-    const caseFound = await caseModel.findById(caseId);
+    const { caseId } = req.params.case_ID;
+    const caseFound = await caseModel.findById({case_ID: caseId});
     if (caseFound.plaintiff_Name) {
       const decryptedName = decrypt(caseFound.plaintiff_Name);
       caseFound.plaintiff_Name = decryptedName;
