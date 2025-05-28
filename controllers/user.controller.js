@@ -1,4 +1,6 @@
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
+const { decrypt } = require("../utils/encrypt.util");
 const { getUserModel, getCaseModel } = require("../models/schema");
 
 // for login
@@ -97,10 +99,32 @@ const case_filling = async (req, res) => {
     };
 
     const newCase = await caseModel.create(caseData);
+    const newCaseObject = newCase.toObject();
+    const hashedCase = crypto
+      .createHash("sha256")
+      .update(JSON.stringify(newCaseObject))
+      .digest("hex");
 
     res.status(200).json({ success: true, case: newCase });
   } catch (err) {
     console.error("Case filling error:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
+const decryptCase = async (req, res) => {
+  const caseModel = getCaseModel();
+  try {
+    const { caseId } = req.params.id;
+    const caseFound = await caseModel.findById(caseId);
+    if (caseFound.plaintiff_Name) {
+      const decryptedName = decrypt(caseFound.plaintiff_Name);
+      caseFound.plaintiff_Name = decryptedName;
+    }
+    res.status(200).json({
+      plaintiff_Name: caseFound.plaintiff_Name,
+    });
+  } catch (err) {
+    console.error("Decryption error:", err);
     res.status(500).json({ success: false, error: err.message });
   }
 };
@@ -110,4 +134,5 @@ module.exports = {
   register,
   login,
   case_filling,
+  decryptCase,
 };

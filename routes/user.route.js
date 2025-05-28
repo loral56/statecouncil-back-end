@@ -1,5 +1,5 @@
 const express = require("express");
-const routes = express.Router(); //focus here plzzzz
+const routes = express.Router(); 
 const multer = require("multer");
 
 const storage = multer.diskStorage({
@@ -17,6 +17,7 @@ const {
   register,
   login,
   case_filling,
+  decryptCase,
 } = require("../controllers/user.controller");
 
 routes.post("/Login", login);
@@ -28,5 +29,6 @@ routes.post(
 );
 
 routes.post("/NewCaseForm", upload.single("documents"), case_filling);
+routes.get("/NewCaseForm/:id", decryptCase);
 
 module.exports = routes;

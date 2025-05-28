@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { encrypt } = require("../utils/encrypt.util");
 // MongoDB connection
 require("dotenv").config();
 let userModel;
@@ -47,6 +48,65 @@ mongoose
         default: "Pending",
       },
     });
+
+    caseSchema.pre("save", async function (next) {
+      const doc = this;
+      if (doc.isNew) {
+        const counter = await Counter.findByIdAndUpdate(
+          { _id: "case_ID" },
+          { $inc: { seq: 1 } },
+          { new: true, upsert: true }
+        );
+        doc.case_ID = counter.seq.toString().padStart(6, "0");
+      }
+      if (this.isModified("plaintiff_Name") && this.plaintiff_Name) {
+        const encrypted = await encrypt(this.plaintiff_Name);
+        this.plaintiff_Name = JSON.stringify(encrypted); // Save as string
+      }
+
+      if (this.isModified("national_ID") && this.national_ID) {
+        const encrypted = await encrypt(String(this.national_ID));
+        this.national_ID = JSON.stringify(encrypted);
+      }
+
+      if (this.isModified("Email") && this.Email) {
+        const encrypted = await encrypt(this.Email);
+        this.Email = JSON.stringify(encrypted);
+      }
+
+      if (this.isModified("concerned_Authority") && this.concerned_Authority) {
+        const encrypted = await encrypt(this.concerned_Authority);
+        this.concerned_Authority = JSON.stringify(encrypted);
+      }
+
+      // if (this.isModified("documents") && this.documents !== null) {
+      //   const encrypted = await encrypt(this.documents);
+      //   this.documents = JSON.stringify(encrypted);
+      // }
+
+      if (this.isModified("court_name") && this.court_name) {
+        const encrypted = await encrypt(this.court_name);
+        this.court_name = JSON.stringify(encrypted);
+      }
+
+      if (this.isModified("Incident_Location") && this.Incident_Location) {
+        const encrypted = await encrypt(this.Incident_Location);
+        this.Incident_Location = JSON.stringify(encrypted);
+      }
+
+      if (this.isModified("case_description") && this.case_description) {
+        const encrypted = await encrypt(this.case_description);
+        this.case_description = JSON.stringify(encrypted);
+      }
+
+      next();
+    });
+    const counterSchema = new mongoose.Schema({
+      _id: { type: String, required: true },
+      seq: { type: Number, default: 0 },
+    });
+    const Counter = mongoose.model("Counter", counterSchema);
+
     caseModel = casefileDB.model("case_infos", caseSchema);
   })
   .catch((err) => {
